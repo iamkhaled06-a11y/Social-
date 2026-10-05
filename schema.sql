@@ -1,0 +1,55 @@
+CREATE TABLE IF NOT EXISTS users (
+  id BIGSERIAL PRIMARY KEY,
+  username TEXT UNIQUE NOT NULL,
+  password_hash TEXT NOT NULL,
+  public_key TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS servers (
+  id BIGSERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  description TEXT DEFAULT '',
+  owner_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  invite_code TEXT UNIQUE NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS server_members (
+  server_id BIGINT REFERENCES servers(id) ON DELETE CASCADE,
+  user_id BIGINT REFERENCES users(id) ON DELETE CASCADE,
+  role TEXT NOT NULL DEFAULT 'member',
+  joined_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY(server_id,user_id)
+);
+
+CREATE TABLE IF NOT EXISTS channels (
+  id BIGSERIAL PRIMARY KEY,
+  server_id BIGINT NOT NULL REFERENCES servers(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS channel_keys (
+  channel_id BIGINT NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
+  user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  encrypted_key TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY(channel_id,user_id)
+);
+
+CREATE TABLE IF NOT EXISTS messages (
+  id BIGSERIAL PRIMARY KEY,
+  channel_id BIGINT NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
+  user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  ciphertext TEXT NOT NULL,
+  iv TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS messages_channel_time_idx
+ON messages(channel_id,created_at);
+
+ALTER TABLE users ADD COLUMN IF NOT EXISTS public_key TEXT;
+ALTER TABLE messages ADD COLUMN IF NOT EXISTS ciphertext TEXT;
+ALTER TABLE messages ADD COLUMN IF NOT EXISTS iv TEXT;
