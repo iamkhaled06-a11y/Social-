@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: private-social-servers
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: private-social-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+
+databases:
+  - name: private-social-db
+    databaseName: social
+    user: social
+    plan: free
