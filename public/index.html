@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>شبكة خاصة</title><link rel="stylesheet" href="/style.css">
+<script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+<div id="auth" class="auth">
+  <div class="card">
+    <h1>شبكة خاصة 🔐</h1>
+    <p>محادثات مشفّرة من الطرف إلى الطرف</p>
+    <div class="tabs"><button id="loginTab" class="active">دخول</button><button id="registerTab">حساب جديد</button></div>
+    <input id="username" placeholder="اسم المستخدم" maxlength="32">
+    <input id="password" type="password" placeholder="كلمة المرور (8 أحرف على الأقل)">
+    <button id="authBtn" class="primary">دخول</button>
+    <div id="authError" class="error"></div>
+  </div>
+</div>
+
+<div id="app" class="hidden">
+  <aside class="servers">
+    <div class="brand">🔐</div><div id="serverList"></div>
+    <button id="newServer" title="سيرفر جديد">＋</button>
+    <button id="joinServer" title="انضمام">↪</button>
+  </aside>
+  <aside class="channels">
+    <div class="sideHead"><b id="serverName">اختر سيرفرا</b><button id="logout">خروج</button></div>
+    <div class="security">🔒 التشفير طرف-لطرف</div>
+    <div id="channelList"></div>
+    <button id="newChannel" class="small">＋ قناة</button>
+    <div class="me" id="me"></div>
+  </aside>
+  <main class="chat">
+    <header><b id="channelName">لا توجد قناة</b><span id="status"></span></header>
+    <section id="messages"></section>
+    <form id="composer" class="composer">
+      <input id="messageInput" autocomplete="off" placeholder="اكتب رسالة مشفّرة..." disabled>
+      <button disabled>إرسال</button>
+    </form>
+  </main>
+</div>
+<script src="/app.js"></script>
+</body></html>
